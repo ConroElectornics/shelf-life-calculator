@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shelf Life Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input {
+      padding: 8px;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Shelf Life Calculator</h2>
+
+  <label for="startDate">Shelf Life Start Date:</label>
+  <input type="date" id="startDate">
+
+  <label for="todayDate">Today's Date:</label>
+  <input type="date" id="todayDate">
+
+  <label for="expirationDate">Expiration Date:</label>
+  <input type="date" id="expirationDate">
+
+  <button onclick="calculateShelfLife()">Calculate</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculateShelfLife() {
+      const startDate = new Date(document.getElementById("startDate").value);
+      const todayDate = new Date(document.getElementById("todayDate").value);
+      const expirationDate = new Date(document.getElementById("expirationDate").value);
+
+      if (isNaN(startDate) || isNaN(todayDate) || isNaN(expirationDate)) {
+        document.getElementById("result").innerHTML = "Please enter all three dates.";
+        return;
+      }
+
+      const totalShelfLife = (expirationDate - startDate) / (1000 * 60 * 60 * 24);
+      const daysUsed = (todayDate - startDate) / (1000 * 60 * 60 * 24);
+      const daysLeft = totalShelfLife - daysUsed;
+
+      const percentLeft = ((daysLeft / totalShelfLife) * 100).toFixed(2);
+
+      const daysTo75Percent = totalShelfLife * 0.25;
+      const dateAt75Percent = new Date(startDate.getTime() + daysTo75Percent * 24 * 60 * 60 * 1000);
+      const formattedDateAt75 = dateAt75Percent.toISOString().split('T')[0];
+
+      document.getElementById("result").innerHTML = `
+        <strong>Results:</strong><br>
+        Days Left: <strong>${Math.round(daysLeft)}</strong><br>
+        Percent Shelf Life Remaining: <strong>${percentLeft}%</strong><br>
+        Date at 75% Shelf Life Remaining: <strong>${formattedDateAt75}</strong>
+      `;
+    }
+  </script>
+
+</body>
+</html>
