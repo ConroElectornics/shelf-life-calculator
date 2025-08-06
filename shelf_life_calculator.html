@@ -52,6 +52,17 @@
   <div class="result" id="result"></div>
 
   <script>
+ window.onload = function () {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const dd = String(today.getDate()).padStart(2, '0');
+      const formattedToday = `${yyyy}-${mm}-${dd}`;
+      document.getElementById("todayDate").value = formattedToday;
+    };
+
+
+    
     function formatReadableDate(date) {
       const day = date.getDate();
       const monthNames = [
