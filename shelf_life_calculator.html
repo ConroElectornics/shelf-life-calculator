@@ -25,16 +25,20 @@
     }
     button {
       cursor: pointer;
-      max-width: 100px;
+      max-width: 150px;
       background-color: #C90C0F;
       border: 2px solid #C90C0F;
       color: white;
+      border-radius: 6px;
     }
     .result {
       background: #f9f9f9;
       padding: 15px;
       border-radius: 8px;
       margin-top: 20px;
+    }
+    #copyBtn {
+      display: none; /* hidden until result is shown */
     }
   </style>
 </head>
@@ -54,19 +58,18 @@
   <button onclick="calculateShelfLife()">Calculate</button>
 
   <div class="result" id="result"></div>
+  <button id="copyBtn" onclick="copyResult()">Copy Result</button>
 
   <script>
- window.onload = function () {
+    window.onload = function () {
       const today = new Date();
       const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); 
       const dd = String(today.getDate()).padStart(2, '0');
       const formattedToday = `${yyyy}-${mm}-${dd}`;
       document.getElementById("todayDate").value = formattedToday;
     };
 
-
-    
     function formatReadableDate(date) {
       const day = date.getDate();
       const monthNames = [
@@ -90,13 +93,20 @@
     }
 
     function calculateShelfLife() {
-      const startDate = new Date(document.getElementById("startDate").value);
-      const todayDate = new Date(document.getElementById("todayDate").value);
-      const expirationDate = new Date(document.getElementById("expirationDate").value);
+      const startDateInput = document.getElementById("startDate").value;
+      const todayDateInput = document.getElementById("todayDate").value;
+      const expirationDateInput = document.getElementById("expirationDate").value;
+
+      const startDate = new Date(startDateInput);
+      const todayDate = new Date(todayDateInput);
+      const expirationDate = new Date(expirationDateInput);
+
       const result = document.getElementById("result");
+      const copyBtn = document.getElementById("copyBtn");
 
       if (isNaN(startDate) || isNaN(todayDate) || isNaN(expirationDate)) {
         result.innerHTML = "❗ Please fill all the dates correctly.";
+        copyBtn.style.display = "none";
         return;
       }
 
@@ -106,21 +116,35 @@
 
       if (daysLeft < 0 || totalShelfLife <= 0) {
         result.innerHTML = "❗ Invalid date range. Please check the dates.";
+        copyBtn.style.display = "none";
         return;
       }
 
       const percentLeft = ((daysLeft / totalShelfLife) * 100).toFixed(2);
-
       const daysTo75Percent = totalShelfLife * 0.25;
       const dateAt75Percent = new Date(startDate.getTime() + daysTo75Percent * 24 * 60 * 60 * 1000);
       const formattedDateAt75 = formatReadableDate(dateAt75Percent);
 
       result.innerHTML = `
+        <strong>Selected Dates:</strong><br>
+        Shelf Life Start Date: <strong>${formatReadableDate(startDate)}</strong><br>
+        Today's Date: <strong>${formatReadableDate(todayDate)}</strong><br>
+        Expiration Date: <strong>${formatReadableDate(expirationDate)}</strong><br><br>
+
         <strong>Results:</strong><br>
         Days Left: <strong>${Math.round(daysLeft)}</strong><br>
         Percent Shelf Life Remaining: <strong>${percentLeft}%</strong><br>
         Date at 75% Shelf Life Remaining: <strong>${formattedDateAt75}</strong>
       `;
+
+      copyBtn.style.display = "inline-block"; 
+    }
+
+    function copyResult() {
+      const resultText = document.getElementById("result").innerText;
+      navigator.clipboard.writeText(resultText).then(() => {
+        alert("Result copied to clipboard ✅");
+      });
     }
   </script>
 
